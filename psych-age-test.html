@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>心理年龄测试 · 你心里住着的，是几岁的你</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:linear-gradient(160deg,#f6f3ea 0%,#eef3f6 100%);color:#2b2b30;
+    min-height:100%;display:flex;align-items:center;justify-content:center;padding:20px}
+  .wrap{width:100%;max-width:460px}
+  .card{background:#fff;border-radius:22px;box-shadow:0 10px 30px rgba(60,70,90,.10);
+    padding:28px 24px;min-height:420px;display:flex;flex-direction:column}
+  .tag{font-size:13px;color:#a08a4f;font-weight:700;letter-spacing:2px}
+  h1{font-size:23px;line-height:1.5;margin:12px 0 8px}
+  .sub{font-size:15px;line-height:1.85;color:#55565c}
+  .btn{margin-top:22px;width:100%;border:none;border-radius:14px;background:#3f7d6b;color:#fff;
+    font-size:17px;font-weight:700;padding:15px 0;letter-spacing:2px;cursor:pointer;transition:transform .12s}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:#eef1f2;color:#3a3d44;margin-top:10px}
+  /* progress */
+  .prog{display:flex;gap:6px;margin:6px 0 16px}
+  .seg{flex:1;height:7px;border-radius:4px;background:#e7e8ec}
+  .seg.on{background:#3f7d6b}
+  .qno{font-size:13px;color:#9a9ba3;margin-bottom:10px}
+  .qt{font-size:19px;font-weight:700;line-height:1.6;margin-bottom:18px}
+  .opt{border:1.5px solid #e3e5ea;border-radius:14px;padding:14px 15px;margin-bottom:12px;
+    font-size:16px;line-height:1.6;color:#33343a;cursor:pointer;transition:all .12s}
+  .opt b{color:#3f7d6b;font-weight:700;margin-right:6px}
+  .opt:active{background:#f2f6f4;border-color:#3f7d6b}
+  /* result */
+  .score{font-size:13px;color:#9a9ba3;margin:4px 0 10px}
+  .res{font-size:22px;font-weight:800;color:#2b2b30;line-height:1.5;margin-bottom:6px}
+  .resdesc{font-size:16px;line-height:1.85;color:#46474d;margin-top:8px}
+  .advice{margin-top:16px;background:#f6f3ea;border-left:4px solid #d8b45a;border-radius:10px;
+    padding:14px 16px;font-size:15.5px;line-height:1.8;color:#4a3f28}
+  .advice b{color:#8a6d1f}
+  .center{text-align:center}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- 开始页 -->
+  <div class="card center" id="home">
+    <div class="tag center" style="font-size:14px;color:#a08a4f">心理年龄测试 · 10 道题</div>
+    <h1>你心里住着的，<br>是几岁的你？</h1>
+    <p class="sub" style="margin-top:12px">10 道题，约 2 分钟。<br>
+      别想太久，选"第一反应最像你"的那个。<br>
+      答案只有你自己知道。</p>
+    <button class="btn" onclick="startQuiz()">开始测试</button>
+  </div>
+
+  <!-- 答题页 -->
+  <div class="card hidden" id="quiz">
+    <div class="prog" id="prog"></div>
+    <div class="qno" id="qno"></div>
+    <div class="qt" id="qt"></div>
+    <div id="opts"></div>
+  </div>
+
+  <!-- 结果页 -->
+  <div class="card hidden" id="result">
+    <div class="tag center">你的结果</div>
+    <div class="center">
+      <div class="score" id="score"></div>
+      <div class="res" id="resTitle"></div>
+    </div>
+    <div class="resdesc" id="resBody"></div>
+    <div class="advice" id="advice"></div>
+    <button class="btn" onclick="startQuiz()">再测一次</button>
+    <button class="btn ghost" onclick="home()">返回首页</button>
+  </div>
+</div>
+
+<script>
+var QS=[
+ {q:"周末突然多出来一整天，你最可能的安排是？",o:["睡到自然醒，刷手机看看剧，\u201c反正也没事\u201d","随便逛逛，遇到想试的新店/新地方就进","列个计划，去健身/读书/处理积压的事","没啥想做的，就躺着发呆，觉得\u201c时间过得好快，我这样下去不行\u201d"]},
+ {q:"被人当众说了一句不好听的话（不是恶意，但让你不舒服），你第一反应？",o:["当场就怼回去，哪怕事后觉得有点过","先忍着，回去想想，可能第二天找机会聊聊","表面笑笑，心里记住，以后保持距离","反复回放那句话，越想越气，可能三天没缓过来"]},
+ {q:"你觉得最近这一年，和十年前比，最大的变化是？",o:["好像也没什么变化，该干嘛干嘛","多了些想做的事，也多了些不想忍的事","更\u201c稳\u201d了，但也没那么兴奋了","规则多了，快乐变\u201c难\u201d了"]},
+ {q:"朋友约你周末去一个你没听过的地方玩，你的反应？",o:["去！说走就走！","先查查好不好玩，觉得不错就报名","看看时间方不方便，不耽误事就去","\u201c我年纪了，去那种地方不太合适吧\u201d"]},
+ {q:"你手机里有没有\u201c很久没打开但舍不得删\u201d的 App？",o:["没有，该删就删","有一两个，但\u201c算了，留着吧\u201d","有几个，每次清理都犹豫很久","有一堆，\u201c万一以后要用呢\u201d，但基本不打开"]},
+ {q:"你夸自己\u201c今天做得不错\u201d的频率？",o:["经常，干完就夸","偶尔，做得特别好的时候","很少，觉得\u201c还行\u201d就算夸了","几乎没有，更多是\u201c还不够好\u201d"]},
+ {q:"你最近一次\u201c纯粹为了好玩\u201d做一件事，是什么时候？",o:["这周/这两天","最近一个月","想不起来了，好像很久没\u201c纯粹玩\u201d过了","\u201c玩\u201d对我来说有点奢侈"]},
+ {q:"你听到\u201c你应该……\u201d时，第一反应？",o:["翻个白眼，\u201c关我什么事\u201d","先听，再决定\u201c哪些我接受，哪些不算数\u201d","心里\u201c嗯\u201d了一声，然后默默照做了","整个人都僵了，\u201c我不该……我不够……\u201d"]},
+ {q:"你觉得自己\u201c哭\u201d的能力（能哭出来、能表达脆弱）？",o:["想哭就哭，没什么不好意思的","偶尔会，但得找个人/找个场合","很少，\u201c都多大了，哭什么\u201d","不记得上次哭是什么时候了"]},
+ {q:"如果人生是一个 App，你现在在哪个界面？",o:["还在\u201c新手村\u201d，到处乱点","在\u201c探索模式\u201d，有方向但不着急","在\u201c任务列表\u201d模式，一直在赶进度","在\u201c设置\u201d里改来改去，觉得\u201c哪里都不对\u201d"]}
+];
+var LETTERS=["A","B","C","D"];
+var i=0,score=0,ans=0;
+
+function show(id){["home","quiz","result"].forEach(function(x){document.getElementById(x).classList.add("hidden");});document.getElementById(id).classList.remove("hidden");}
+function home(){i=0;score=0;ans=0;show("home");}
+function startQuiz(){i=0;score=0;ans=0;show("quiz");render();}
+function render(){
+  var q=QS[i];
+  document.getElementById("qno").textContent="第 "+(i+1)+" / "+QS.length+" 题";
+  document.getElementById("qt").textContent=q.q;
+  var prog="";for(var s=0;s<QS.length;s++){prog+='<div class="seg'+(s<i?' on':'')+'"></div>';}
+  document.getElementById("prog").innerHTML=prog;
+  var box="";
+  for(var k=0;k<4;k++){box+='<div class="opt" onclick="pick('+k+')"><b>'+LETTERS[k]+'</b>'+q.o[k]+'</div>';}
+  document.getElementById("opts").innerHTML=box;
+}
+function pick(k){
+  score+=(k+1);
+  if(i+1<QS.length){i++;render();window.scrollTo(0,0);}
+  else{showResult();}
+}
+function band(){
+  if(score<=16)return{t:"心理年龄偏小 · 比实际年轻 5–8 岁",
+    b:"你内心住着的那个\u201c小孩\u201d还在。直觉强、情绪来得快去得快、喜欢\u201c说走就走\u201d。你不容易\u201c活死\u201d，新鲜感还在。",
+    a:"要补的：有时候\u201c冲动\u201d比\u201c想清楚\u201d先一步。<b>不是要你\u201c成熟\u201d，是要你在冲之前停 3 秒。</b>"};
+  if(score<=25)return{t:"心理年龄适中 · 最健康的区间 ★",
+    b:"你是那个\u201c既玩得起来，也稳得住\u201d的人。好奇心和分寸感都在。你能\u201c纯粹因为好玩\u201d做一件事，也能在\u201c不好玩\u201d的时候不慌。",
+    a:"你的快乐还没被\u201c条件化\u201d。<b>保持它最好的方法：别让\u201c应该\u201d堆太多。</b>\u201c应该\u201d多了，\u201c玩\u201d就会变奢侈。"};
+  if(score<=33)return{t:"心理年龄偏成熟 · 与实际年龄持平",
+    b:"你更\u201c稳\u201d了，规则感强，做事有章法。但\u201c兴奋\u201d在退，\u201c差不多就行了\u201d在涨。你的快乐开始\u201c做完事之后才允许\u201d，而那件事永远排不完。",
+    a:"要补的：把\u201c玩\u201d从\u201c做完事之后的奖励\u201d，<b>变成\u201c事的一部分\u201d</b>。你\u201c玩\u201d着的时候，才最像你自己。"};
+  return{t:"心理年龄偏\u201c显老\u201d · 比实际显老 3–5 岁",
+    b:"不是你不年轻，是\u201c内在那个声音\u201d太响了——\u201c我不该\u201d\u201c我不够\u201d\u201c都多大了\u201d。你的快乐被\u201c负罪感\u201d和\u201c规则\u201d包了三层皮。",
+    a:"最实际的一步：<b>这周做一件\u201c没有任何用处、纯粹因为好玩\u201d的事。</b>不拍照、不发圈、不\u201c有意义\u201d。玩完你会发现：你没那么老，只是绷太久了。"};
+}
+function showResult(){
+  var d=band();
+  document.getElementById("score").textContent="你得了 "+score+" 分（满分 40）";
+  document.getElementById("resTitle").textContent=d.t;
+  document.getElementById("resBody").textContent=d.b;
+  document.getElementById("advice").innerHTML="一句话："+d.a;
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
